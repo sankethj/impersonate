@@ -11,13 +11,18 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Build x64 Release
-        # Using **/ to find the .sln wherever it is in the repo
-        run: msbuild **/Impersonate.sln /p:Configuration=Release /p:Platform=x64 /p:RuntimeLibrary=MultiThreaded
+      - name: Find and Build Solution
+        shell: pwsh
+        run: |
+          # Find the first .sln file in the repo
+          $slnFile = Get-ChildItem -Recurse -Filter "Impersonate.sln" | Select-Object -First 1 -ExpandProperty FullName
+          Write-Host "Found Solution at: $slnFile"
+          
+          # Run MSBuild on the specific path found
+          msbuild $slnFile /p:Configuration=Release /p:Platform=x64 /p:RuntimeLibrary=MultiThreaded
 
       - name: Upload Compiled EXE
         uses: actions/upload-artifact@v4
         with:
           name: Impersonate-x64-Static
-          # This captures any exe in a Release folder
           path: "**/Release/*.exe"
