@@ -1,0 +1,16 @@
+name: Build EXE
+on: push
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Build Solution
+        run: msbuild Impersonate.sln /p:Configuration=Release /p:Platform=x64 /p:RuntimeLibrary=MultiThreaded
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Impersonate-EXE
+          path: "**/Release/*.exe"
