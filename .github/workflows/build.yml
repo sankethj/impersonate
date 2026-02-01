@@ -1,19 +1,23 @@
-name: Build EXE
+name: Build Impersonate EXE
 on: push
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Add MSBuild to PATH
+      - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Build Solution
-        run: msbuild Impersonate.sln /p:Configuration=Release /p:Platform=x64 /p:RuntimeLibrary=MultiThreaded
+      - name: Build x64 Release
+        # Using **/ to find the .sln wherever it is in the repo
+        run: msbuild **/Impersonate.sln /p:Configuration=Release /p:Platform=x64 /p:RuntimeLibrary=MultiThreaded
 
-      - name: Upload Artifact
+      - name: Upload Compiled EXE
         uses: actions/upload-artifact@v4
         with:
-          name: Impersonate-EXE
+          name: Impersonate-x64-Static
+          # This captures any exe in a Release folder
           path: "**/Release/*.exe"
